@@ -6,15 +6,20 @@ import {
   Delete,
   Get,
   Inject,
+  Logger,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { catchError, firstValueFrom } from 'rxjs';
 
 @Controller('products')
 export class ProductsController {
+  private readonly logger = new Logger(Controller.name);
+
   constructor(
     @Inject(PRODUCT_SERVICE) private readonly productsClient: ClientProxy,
   ) {}
@@ -35,8 +40,26 @@ export class ProductsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return `Product ${id}`;
+  async findOne(@Param('id', new ParseIntPipe()) id: number) {
+    // First way with promise
+    /* try {
+      const product = await firstValueFrom(
+        this.productsClient.send({ cmd: 'find-one-product' }, { id }),
+      );
+      this.logger.log({ product });
+      return product;
+    } catch (error: any) {
+      this.logger.log(error);
+      throw new RpcException(error);
+      } */
+
+    // Second way with observable
+    return this.productsClient.send({ cmd: 'find-one-product' }, { id }).pipe(
+      catchError((err) => {
+        this.logger.log(err);
+        throw new RpcException(err);
+      }),
+    );
   }
 
   @Delete(':id')
