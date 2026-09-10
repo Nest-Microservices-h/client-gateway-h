@@ -6,8 +6,7 @@ import {
   Param,
   Inject,
   Logger,
-  ParseIntPipe,
-  Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { ORDERS_SERVICE, PRODUCT_SERVICE } from '@/config';
@@ -40,8 +39,8 @@ export class OrdersController {
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseIntPipe()) id: number) {
-    return this.ordersClient.send('findOneOrder', id).pipe(
+  findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.ordersClient.send('findOneOrder', { id }).pipe(
       catchError((err) => {
         this.logger.log(err);
         throw new RpcException(err);
