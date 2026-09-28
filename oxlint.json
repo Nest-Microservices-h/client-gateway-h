@@ -1,0 +1,11 @@
+{
+  "categories": {
+    "correctness": "warn",
+    "suspicious": "warn",
+    "perf": "warn",
+    "style": "warn",
+    "restriction": "warn"
+  },
+  "target": "ES2023",
+  "skip": ["node_modules/**", "dist/**", "coverage/**"]
+}
