@@ -1,98 +1,271 @@
+# Client Gateway - NestJS Microservices Gateway
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A robust API Gateway built with NestJS that serves as the entry point for microservices architecture. This gateway handles HTTP requests and routes them to appropriate microservices using TCP communication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🏗️ Architecture
 
-## Description
+This project implements a microservices architecture pattern where the API Gateway acts as a single entry point that:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Receives HTTP requests from clients
+- Validates and transforms requests using DTOs
+- Routes requests to appropriate microservices via TCP
+- Handles errors and responses consistently
+- Provides pagination and filtering capabilities
 
-## Project setup
+### Microservices Integration
 
-```bash
-$ npm install
-```
+The gateway communicates with the following microservices:
 
-## Compile and run the project
+- **Products Microservice** (Port 3001)
+- **Orders Microservice** (Port 3002)
 
-```bash
-# development
-$ npm run start
+## 📋 Prerequisites
 
-# watch mode
-$ npm run start:dev
+Before running this project, ensure you have:
 
-# production mode
-$ npm run start:prod
-```
+- **Node.js** >= 18.0.0
+- **npm** >= 9.0.0
+- **Git**
 
-## Run tests
+## 🚀 Getting Started
+
+### 1. Clone the repository
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone git@github.com:Nest-Microservices-h/client-gateway-h.git
+cd client-gateway-h
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 2. Install dependencies
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 3. Configure environment variables
 
-## Resources
+Create a `.env` file in the root directory based on `.env.template`:
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+cp .env.template .env
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Update the `.env` file with your microservices configuration:
 
-## Support
+```env
+PORT=3000
+PRODUCTS_MICROSERVICE_HOST=localhost
+PRODUCTS_MICROSERVICE_PORT=3001
+ORDERS_MICROSERVICE_HOST=localhost
+ORDERS_MICROSERVICE_PORT=3002
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 4. Start microservices
 
-## Stay in touch
+Before starting the gateway, ensure that the required microservices are running:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+# Start Products Microservice (in products-ms directory)
+cd ../products-ms
+npm run start:dev
 
-## License
+# Start Orders Microservice (in orders-ms directory)
+cd ../orders-ms
+npm run start:dev
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 5. Run the gateway
+
+```bash
+# Development mode with hot reload
+npm run start:dev
+
+# Production mode
+npm run build
+npm run start:prod
+```
+
+The gateway will be available at `http://localhost:3000/api`
+
+## 📁 Project Structure
+
+```
+client-gateway-h/
+├── src/
+│   ├── common/              # Shared utilities and DTOs
+│   │   ├── dto/            # Common DTOs (PaginationDto)
+│   │   ├── exceptions/     # Custom exception filters
+│   │   └── index.ts
+│   ├── config/             # Configuration files
+│   │   ├── envs.ts         # Environment variables validation
+│   │   ├── service.ts      # Microservice constants
+│   │   └── index.ts
+│   ├── orders/             # Orders module
+│   │   ├── dto/           # Orders DTOs
+│   │   ├── enum/          # Order status enums
+│   │   ├── orders.controller.ts
+│   │   ├── orders.module.ts
+│   │   └── orders.service.ts
+│   ├── products/           # Products module
+│   │   ├── dto/           # Products DTOs
+│   │   ├── products.controller.ts
+│   │   ├── products.module.ts
+│   │   └── products.service.ts
+│   ├── app.module.ts       # Root module
+│   └── main.ts             # Application entry point
+├── test/                   # E2E tests
+├── .env.template          # Environment variables template
+├── oxlint.json            # Oxlint configuration
+├── package.json
+└── tsconfig.json
+```
+
+## 🔧 Available Scripts
+
+```bash
+# Development
+npm run start              # Start application
+npm run start:dev          # Start in watch mode (recommended for development)
+npm run start:debug        # Start in debug mode
+npm run start:prod         # Start in production mode
+
+# Building
+npm run build              # Build the project
+
+# Code Quality
+npm run lint               # Run oxlint for code linting
+npm run format            # Format code with Prettier
+
+# Testing
+npm run test               # Run unit tests
+npm run test:e2e          # Run end-to-end tests
+npm run test:cov          # Run tests with coverage
+npm run test:watch        # Run tests in watch mode
+```
+
+## 🌐 API Endpoints
+
+### Products
+
+| Method | Endpoint            | Description                        |
+| ------ | ------------------- | ---------------------------------- |
+| POST   | `/api/products`     | Create a new product               |
+| GET    | `/api/products`     | Get all products (with pagination) |
+| GET    | `/api/products/:id` | Get a specific product by ID       |
+| PATCH  | `/api/products/:id` | Update a product                   |
+| DELETE | `/api/products/:id` | Delete a product                   |
+
+### Orders
+
+| Method | Endpoint              | Description                                        |
+| ------ | --------------------- | -------------------------------------------------- |
+| POST   | `/api/orders`         | Create a new order                                 |
+| GET    | `/api/orders`         | Get all orders (with pagination and status filter) |
+| GET    | `/api/orders/:status` | Get orders by status                               |
+| GET    | `/api/orders/id/:id`  | Get a specific order by ID                         |
+| PATCH  | `/api/orders/:id`     | Change order status                                |
+
+## 🔐 Environment Variables
+
+| Variable                     | Description                | Default   | Required |
+| ---------------------------- | -------------------------- | --------- | -------- |
+| `PORT`                       | Gateway port               | 3000      | Yes      |
+| `PRODUCTS_MICROSERVICE_HOST` | Products microservice host | localhost | Yes      |
+| `PRODUCTS_MICROSERVICE_PORT` | Products microservice port | 3001      | Yes      |
+| `ORDERS_MICROSERVICE_HOST`   | Orders microservice host   | localhost | Yes      |
+| `ORDERS_MICROSERVICE_PORT`   | Orders microservice port   | 3002      | Yes      |
+
+## 🛠️ Tech Stack
+
+- **Framework**: NestJS 12.1.1
+- **Language**: TypeScript 6.0.3
+- **Validation**: class-validator, class-transformer
+- **Environment**: dotenv, joi
+- **Code Quality**: oxlint, Prettier
+- **Testing**: Jest 30.5.2
+
+## 🔍 Code Quality
+
+This project uses **oxlint** instead of ESLint for faster linting. Run the linter before committing:
+
+```bash
+npm run lint
+```
+
+TypeScript configuration is set to be strict but allows for DTO flexibility:
+
+- `strictNullChecks: true`
+- `strictPropertyInitialization: false` (for DTOs)
+
+## 🐛 Troubleshooting
+
+### Connection Refused Errors
+
+If you encounter `ECONNREFUSED` errors:
+
+1. **Verify microservices are running**: Check that both products and orders microservices are started
+2. **Check ports**: Ensure no other services are using ports 3001 and 3002
+3. **Verify environment variables**: Check your `.env` file has correct host and port values
+4. **Network issues**: If using Docker, ensure containers are on the same network
+
+### TypeScript Errors
+
+If you encounter TypeScript errors with DTOs:
+
+- The project uses `strictPropertyInitialization: false` to allow DTOs without initializers
+- This is intentional for class-validator DTOs that are populated dynamically
+
+### Build Issues
+
+If you encounter build issues:
+
+```bash
+# Clean build artifacts
+rm -rf dist
+rm tsconfig.build.tsbuildinfo
+
+# Rebuild
+npm run build
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes using conventional commits
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 Commit Convention
+
+This project follows conventional commits:
+
+- `feat:` for new features
+- `fix:` for bug fixes
+- `chore:` for maintenance tasks
+- `refactor:` for code refactoring
+- `docs:` for documentation changes
+
+Example: `feat(orders): add order status filtering`
+
+## 📄 License
+
+This project is [UNLICENSED](LICENSE).
+
+## 🙏 Acknowledgments
+
+- [NestJS](https://nestjs.com/) - The framework used
+- [Microservices Pattern](https://docs.nestjs.com/microservices) - Architecture inspiration
+- [Oxlint](https://oxlint.com/) - Fast linter for TypeScript/JavaScript
+
+## 📞 Support
+
+For support and questions:
+
+- Open an issue in the GitHub repository
+- Check the [NestJS Documentation](https://docs.nestjs.com)
+- Join the [NestJS Discord](https://discord.gg/G7Qnnhy)
