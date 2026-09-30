@@ -1,5 +1,5 @@
 import { PaginationDto } from '@/common';
-import { PRODUCT_SERVICE } from '@/config';
+import { NATS_SERVICE } from '@/config';
 import {
   Body,
   Controller,
@@ -23,22 +23,17 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsController {
   private readonly logger = new Logger(Controller.name);
 
-  constructor(
-    @Inject(PRODUCT_SERVICE) private readonly productsClient: ClientProxy,
-  ) {}
+  constructor(@Inject(NATS_SERVICE) private readonly client: ClientProxy) {}
 
   @Post()
   createProduct(@Body() createProductDto: CreateProductDto) {
-    return this.productsClient.send(
-      { cmd: 'create-product' },
-      createProductDto,
-    );
+    return this.client.send({ cmd: 'create-product' }, createProductDto);
   }
 
   @Get()
   findAllProducts(@Query() paginationDto: PaginationDto) {
     // const { page, limit } = paginationDto;
-    return this.productsClient.send(
+    return this.client.send(
       { cmd: 'find-all-products' },
       // { page, limit },
       paginationDto,
@@ -60,7 +55,7 @@ export class ProductsController {
       } */
 
     // Second way with observable
-    return this.productsClient.send({ cmd: 'find-one-product' }, { id }).pipe(
+    return this.client.send({ cmd: 'find-one-product' }, { id }).pipe(
       catchError((err) => {
         this.logger.log(err);
         throw new RpcException(err);
@@ -70,7 +65,7 @@ export class ProductsController {
 
   @Delete(':id')
   deleteProduct(@Param('id', new ParseIntPipe()) id: number) {
-    return this.productsClient.send({ cmd: 'remove-product' }, { id }).pipe(
+    return this.client.send({ cmd: 'remove-product' }, { id }).pipe(
       catchError((err) => {
         this.logger.log(err);
         throw new RpcException(err);
@@ -82,7 +77,7 @@ export class ProductsController {
     @Param('id', new ParseIntPipe()) id: number,
     @Body() updateProductDto: UpdateProductDto,
   ) {
-    return this.productsClient
+    return this.client
       .send({ cmd: 'update-product' }, { id, ...updateProductDto })
       .pipe(
         catchError((err) => {

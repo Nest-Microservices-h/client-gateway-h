@@ -12,8 +12,8 @@ import { envs, ORDERS_SERVICE } from '@/config';
         name: ORDERS_SERVICE,
         transport: Transport.TCP,
         options: {
-          host: envs.ORDERS_MICROSERVICE_HOST,
-          port: envs.ORDERS_MICROSERVICE_PORT,
+          // host: envs.ORDERS_MICROSERVICE_HOST,
+          // port: envs.ORDERS_MICROSERVICE_PORT,
         },
       },
     ]),
