@@ -18,7 +18,7 @@ import {
   StatusDto,
   UpdateOrderDto,
 } from './dto';
-import { ORDERS_SERVICE } from '@/config';
+import { NATS_SERVICE } from '@/config';
 import { PaginationDto } from '@/common';
 
 @Controller('orders')
@@ -26,7 +26,7 @@ export class OrdersController {
   private readonly logger = new Logger(Controller.name);
 
   constructor(
-    @Inject(ORDERS_SERVICE) private readonly ordersClient: ClientProxy,
+    @Inject(NATS_SERVICE) private readonly ordersClient: ClientProxy,
   ) {}
 
   @Post()
