@@ -4,7 +4,7 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-A robust API Gateway built with NestJS that serves as the entry point for microservices architecture. This gateway handles HTTP requests and routes them to appropriate microservices using TCP communication.
+A robust API Gateway built with NestJS that serves as the entry point for microservices architecture. This gateway handles HTTP requests and routes them to appropriate microservices using NATS messaging system.
 
 ## 🏗️ Architecture
 
@@ -12,16 +12,16 @@ This project implements a microservices architecture pattern where the API Gatew
 
 - Receives HTTP requests from clients
 - Validates and transforms requests using DTOs
-- Routes requests to appropriate microservices via TCP
+- Routes requests to appropriate microservices via NATS messaging
 - Handles errors and responses consistently
 - Provides pagination and filtering capabilities
 
 ### Microservices Integration
 
-The gateway communicates with the following microservices:
+The gateway communicates with the following microservices using NATS:
 
-- **Products Microservice** (Port 3001)
-- **Orders Microservice** (Port 3002)
+- **Products Microservice** (via NATS)
+- **Orders Microservice** (migration in progress)
 
 ## 📋 Prerequisites
 
@@ -30,6 +30,7 @@ Before running this project, ensure you have:
 - **Node.js** >= 18.0.0
 - **npm** >= 9.0.0
 - **Git**
+- **NATS Server** >= 2.10.0 (for message broker)
 
 ## 🚀 Getting Started
 
@@ -58,15 +59,38 @@ Update the `.env` file with your microservices configuration:
 
 ```env
 PORT=3000
-PRODUCTS_MICROSERVICE_HOST=localhost
-PRODUCTS_MICROSERVICE_PORT=3001
-ORDERS_MICROSERVICE_HOST=localhost
-ORDERS_MICROSERVICE_PORT=3002
+NATS_SERVERS="nats://localhost:4222"
 ```
 
-### 4. Start microservices
+### 4. Start NATS Server
 
-Before starting the gateway, ensure that the required microservices are running:
+Before starting the gateway and microservices, ensure NATS server is running:
+
+```bash
+# Using Docker (recommended)
+docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats
+
+# Useful Docker commands for NATS management:
+# View NATS container logs
+docker logs nats-server
+
+# Stop NATS container
+docker stop nats-server
+
+# Start NATS container again
+docker start nats-server
+
+# Remove NATS container
+docker rm nats-server
+
+# Or install locally
+# Download from https://nats.io/download/
+nats-server
+```
+
+### 5. Start microservices
+
+Ensure that the required microservices are running and connected to NATS:
 
 ```bash
 # Start Products Microservice (in products-ms directory)
@@ -78,7 +102,7 @@ cd ../orders-ms
 npm run start:dev
 ```
 
-### 5. Run the gateway
+### 6. Run the gateway
 
 ```bash
 # Development mode with hot reload
@@ -171,18 +195,16 @@ npm run test:watch        # Run tests in watch mode
 
 ## 🔐 Environment Variables
 
-| Variable                     | Description                | Default   | Required |
-| ---------------------------- | -------------------------- | --------- | -------- |
-| `PORT`                       | Gateway port               | 3000      | Yes      |
-| `PRODUCTS_MICROSERVICE_HOST` | Products microservice host | localhost | Yes      |
-| `PRODUCTS_MICROSERVICE_PORT` | Products microservice port | 3001      | Yes      |
-| `ORDERS_MICROSERVICE_HOST`   | Orders microservice host   | localhost | Yes      |
-| `ORDERS_MICROSERVICE_PORT`   | Orders microservice port   | 3002      | Yes      |
+| Variable       | Description                        | Default                 | Required |
+| -------------- | ---------------------------------- | ----------------------- | -------- |
+| `PORT`         | Gateway port                       | 3000                    | Yes      |
+| `NATS_SERVERS` | NATS server URLs (comma-separated) | "nats://localhost:4222" | Yes      |
 
 ## 🛠️ Tech Stack
 
 - **Framework**: NestJS 12.1.1
 - **Language**: TypeScript 6.0.3
+- **Messaging**: NATS (@nats-io/transport-node)
 - **Validation**: class-validator, class-transformer
 - **Environment**: dotenv, joi
 - **Code Quality**: oxlint, Prettier
@@ -203,14 +225,24 @@ TypeScript configuration is set to be strict but allows for DTO flexibility:
 
 ## 🐛 Troubleshooting
 
-### Connection Refused Errors
+### NATS Connection Issues
 
-If you encounter `ECONNREFUSED` errors:
+If you encounter NATS connection errors:
+
+1. **Verify NATS server is running**: Check that NATS server is started and accessible
+2. **Check NATS server URL**: Ensure `NATS_SERVERS` in `.env` is correct (e.g., `nats://localhost:4222`)
+3. **Network connectivity**: Verify network access to NATS server
+4. **Server status**: Check NATS server logs for connection issues
+5. **Docker issues**: If using Docker NATS, ensure proper port mapping (-p 4222:4222)
+
+### Microservices Not Responding
+
+If microservices are not responding:
 
 1. **Verify microservices are running**: Check that both products and orders microservices are started
-2. **Check ports**: Ensure no other services are using ports 3001 and 3002
-3. **Verify environment variables**: Check your `.env` file has correct host and port values
-4. **Network issues**: If using Docker, ensure containers are on the same network
+2. **Check NATS subscription**: Ensure microservices are subscribed to correct NATS subjects
+3. **Verify subject patterns**: Check that message patterns match between gateway and microservices
+4. **Check logs**: Review microservice logs for NATS connection errors
 
 ### TypeScript Errors
 
@@ -259,6 +291,7 @@ This project is [UNLICENSED](LICENSE).
 ## 🙏 Acknowledgments
 
 - [NestJS](https://nestjs.com/) - The framework used
+- [NATS](https://nats.io/) - High-performance messaging system
 - [Microservices Pattern](https://docs.nestjs.com/microservices) - Architecture inspiration
 - [Oxlint](https://oxlint.com/) - Fast linter for TypeScript/JavaScript
 
